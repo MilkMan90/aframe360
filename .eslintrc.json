@@ -1,0 +1,65 @@
+{
+  "extends": ["eslint:recommended", "plugin:react/recommended", "airbnb"],
+
+  "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+          "jsx": true
+      }
+  },
+    "rules": {
+      "no-underscore-dangle": 0,
+      "spaced-comment": 0,
+      "react/react-in-jsx-scope": 0,
+      "react/jsx-boolean-value": ["error", "never"],
+      "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+      "class-methods-use-this": 0,
+      "react/forbid-prop-types": 0,
+      "jsx-a11y/no-static-element-interactions": 0,
+      "react/prop-types": 0,
+      "prefer-template": 0,
+      "arrow-body-style": 0
+    },
+  "globals": {
+    "React": true,
+    "_": true,
+    "$": true,
+    "c3dMapInterface": true,
+    "moment": true,
+    "Modernizr": true,
+    "ReactDOM": true,
+    "classnames": true,
+    "Hammer": true,
+    "keyMirror": true,
+    "ReactTabs": true,
+    "JsonTable": true,
+    "Portal": true,
+    "CopyToClipboard": true,
+    "Slider": true,
+    "CSSTransitionGroup": true,
+    "TransitionGroup": true,
+    "optional": true,
+    "assign": true,
+    "Formsy": true,
+    "Store": true,
+    "AppDispatcher": true,
+    "WindowTransition": true,
+    "Resizable": true,
+    "AtlasException": true,
+    "wrapReactLifecycleMethodsWithTryCatch": true,
+    "reactComponentErrorsConfig": true,
+    "DateFormatter": true,
+    "callCore": true,
+    "describe": true,
+    "it": true,
+    "c3dDispatch": true
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "plugins": [
+    "react"
+  ]
+}
