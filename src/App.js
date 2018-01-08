@@ -1,6 +1,6 @@
 import 'aframe'
 import 'aframe-orbit-controls-component-2'
-
+import './App.css'
 import React, { Component } from 'react';
 
 import ArrowObj from './objects/arrow/arrow.obj'
@@ -66,8 +66,25 @@ class App extends Component {
         currentPano: "#pano4",
       })
     })
+
+    const allArrows = document.getElementsByClassName('arrow')
+    const length = allArrows.length;
+    for(let i = 0; i < length; i++){
+      const arrowElement = document.getElementById(allArrows[i].id);
+      arrowElement.addEventListener('mouseenter', (element) => {
+        this.setState({
+          selectedArrow: element.target.id,
+        })
+      })
+      arrowElement.addEventListener('mouseleave', (element) => {
+        this.setState({
+          selectedArrow: null,
+        })
+      })
+    }
   }
   render() {
+    const selected = this.state.selectedArrow;
     return (
       <div
         className="App"
@@ -90,7 +107,7 @@ class App extends Component {
             radius="100"
           />
           <a-camera
-            position="0 0 5"
+            position="0 15 5"
             orbit-controls="
                 autoRotate: false;
                 target: #target;
@@ -98,18 +115,27 @@ class App extends Component {
                 dampingFactor: 0.25;
                 rotateSpeed:0.14;
                 minDistance: 5;
-                maxDistance: 10;"
+                maxDistance: 10;
+                maxPolarAngle: 1.5707;"
                 zoom={this.state.zoom}>
             {/* <a-entity geometry="primitive: plane; height: 0.2; width: 0.2" position="0 0 -1"
               material="color: gray; opacity: 0.5"></a-entity> */}
           </a-camera>
           <a-entity>
-            <a-entity id="target" scale="1 1 1" position="0 0 0"></a-entity>
+            <a-entity id="target" scale="1 1 1" position="0 2 0"></a-entity>
             {/* <a-entity id="arrow" obj-model="obj: #arrow-obj; mtl: #arrow-mtl"></a-entity> */}
-            <a-entity id="arrow1" obj-model="obj: #arrow-obj; mtl: #arrow-mtl" position="2.304 0.446 -1.531" rotation="81.87566892419464 84.16750010471793 -139.62981467338162" scale="3 3 3"></a-entity>
-            <a-entity id="arrow2" obj-model="obj: #arrow-obj; mtl: #arrow-mtl" position="-2.304 0.446 2.767" rotation="81.87566892419464 -85.88637349011042 -139.62981467338162"scale="3 3 3"></a-entity>
-            <a-entity id="arrow3" obj-model="obj: #arrow-obj; mtl: #arrow-mtl" position="-2 0.446 -2" rotation="81.87566892419464 -180 -139.62981467338162"scale="3 3 3"></a-entity>
-            <a-entity id="arrow4" obj-model="obj: #arrow-obj; mtl: #arrow-mtl" position="2 0.446 2" rotation="81.87566892419464 0 -139.62981467338162"scale="3 3 3"></a-entity>
+            {/* <a-entity class="arrow" id="arrow1" obj-model="obj: #arrow-obj; mtl: #arrow-mtl" color="#6173F4" position="1 0.446 -1" rotation="90 90 -145"  scale="3 3 3"></a-entity> */}
+            <a-entity class="arrow" id="arrow1" obj-model="obj: #arrow-obj;"
+              material={`color: ${selected === 'arrow1' ? 'green' : 'gray'}`}
+              position="1 0.446 -1" rotation="90 90 -145"  scale="3 3 3"></a-entity>
+            <a-entity class="arrow" id="arrow2"
+              obj-model="obj: #arrow-obj;"
+              material={`color: ${selected === 'arrow2' ? 'green' : 'gray'}`}
+              position="-1 0.446 1" rotation="90 -90 -145" scale="3 3 3"></a-entity>
+            <a-entity class="arrow" id="arrow3" obj-model="obj: #arrow-obj;"
+              material={`color: ${selected === 'arrow3' ? 'green' : 'gray'}`} position="-1 0.446 -1" rotation="90 -180 -145" scale="3 3 3"></a-entity>
+            <a-entity class="arrow" id="arrow4" obj-model="obj: #arrow-obj;"
+              material={`color: ${selected === 'arrow4' ? 'green' : 'gray'}`} position="1 0.446 1" rotation="90 0 -145" scale="3 3 3"></a-entity>
           </a-entity>
         </a-scene>
       </div>

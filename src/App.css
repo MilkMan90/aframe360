@@ -26,3 +26,5 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/*.a-canvas.a-grab-cursor:hover{cursor:default}.a-canvas.a-grab-cursor:active,.a-grabbing{cursor:default}*/
