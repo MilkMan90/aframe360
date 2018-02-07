@@ -5,6 +5,7 @@
   "dependencies": {
     "aframe": "^0.7.1",
     "aframe-cubemap-component": "^0.1.2",
+    "aframe-look-at-component": "^0.6.0",
     "aframe-orbit-controls-component-2": "^0.1.14",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
