@@ -50,20 +50,6 @@ class App extends Component {
         <PanoFrame data={this.state.data} components={this.state.components}
         renders={this.state.renders}/>
         <button
-          onClick={()=>{this.setState({
-          data: Math.random()})}}
-          style={{
-            position: 'absolute',
-            left: '20px',
-            top: '10px',
-            width: '200px',
-            height: '50px',
-            zIndex: 9999
-          }}
-        >
-          Click Me
-        </button>
-        <button
           onClick={()=>{this.generateNewObject()}}
           style={{
             position: 'absolute',

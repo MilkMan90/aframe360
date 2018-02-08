@@ -35,6 +35,12 @@ const cube4 = 'https://www.myatlascms.com/assets/1103/panoramas/Occidentaltour/p
 const cube5 = 'https://www.myatlascms.com/assets/1103/panoramas/Occidentaltour/panos/Erdman_Hall_common_room.tiles/pano_u.jpg'
 const cube6 = 'https://www.myatlascms.com/assets/1103/panoramas/Occidentaltour/panos/Erdman_Hall_common_room.tiles/pano_f.jpg'
 
+
+var duration = 3000; /* fade duration in millisecond */
+var hidtime = 2000; /* time to stay hidden */
+var showtime = 2000; /* time to stay visible */
+
+
 class PanoFrame extends Component {
   constructor() {
     super();
@@ -96,8 +102,7 @@ class PanoFrame extends Component {
   }
   initializeZoom() {
     document.querySelector('#scene').addEventListener('mousewheel', (event) => {
-      console.log(event);
-      this.changeZoom(event.deltaY, 0.05);
+      this.changeZoom(event.deltaY, 0.01);
       // let newZoom = 1;
       // const zoomVelocity = 0.1;
       // if (event.deltaY < 0) {
@@ -117,7 +122,7 @@ class PanoFrame extends Component {
       // });
     })
     document.querySelector('#scene').addEventListener('wheel', (event) => {
-      this.changeZoom(event.deltaY, 0.5);
+      this.changeZoom(event.deltaY, 0.05);
       // let newZoom = 1;
       // const zoomVelocity = 0.1;
       // if (event.deltaY < 0) {
@@ -137,12 +142,65 @@ class PanoFrame extends Component {
       // });
     })
   }
+  fadeOut(browserMultiplier) {
+  for (var i = 0; i <= 1; i += 0.01) {
+      setTimeout(this.setZoom((1 - i), browserMultiplier), i * duration);
+      console.log('fade out'+ i);
+    }
+     setTimeout(this.fadeIn(), (duration + hidtime));
+  }
+  fadeIn(browserMultiplier) {
+    for (var i = 0; i <= 1; i += 0.01) {
+      console.log(i);
+      setTimeout(this.setZoom(i, browserMultiplier), i * duration);
+    }
+     setTimeout(this.fadeOut(), (duration + showtime));
+  }
   changeZoom(deltaY, browserMultiplier) {
-
     const camera = document.querySelector('#camera').components.camera.camera;
-		var fov = camera.fov + deltaY * browserMultiplier;
-		camera.fov = THREE.Math.clamp( fov, 10, 75 );
-		camera.updateProjectionMatrix();
+
+    // if (deltaY < -50 || deltaY > 50) {
+      var fov = camera.fov + deltaY * browserMultiplier;
+      camera.fov = THREE.Math.clamp( fov, 10, 75 );
+      camera.updateProjectionMatrix();
+    // }
+
+    // if ( deltaY > -50 && deltaY < 0){
+    //   this.fadeIn(browserMultiplier)
+    // }
+    // if ( deltaY < 50 && deltaY > 0){
+    //   this.fadeIn(browserMultiplier)
+    // }
+
+    // else {
+    //   var delta = deltaY;
+    //   console.log(delta);
+    //   if (deltaY > 0) {
+    //     while (delta > 0) {
+    //       var fov = camera.fov + delta/dampenFactor * browserMultiplier;
+    //       camera.fov = THREE.Math.clamp( fov, 10, 75 );
+    //       camera.updateProjectionMatrix();
+    //       delta = delta - deltaY/dampenFactor;
+    //       console.log(delta);
+    //     }
+    //   } else if (deltaY < 0) {
+    //     while (delta < 0) {
+    //       var fov = camera.fov + delta/dampenFactor * browserMultiplier;
+    //       camera.fov = THREE.Math.clamp( fov, 10, 75 );
+    //       camera.updateProjectionMatrix();
+    //       delta = delta - (deltaY/dampenFactor);
+    //       console.log(delta);
+    //     }
+    //   }
+
+    // }
+  }
+  setZoom(delta, browserMultiplier) {
+    const camera = document.querySelector('#camera').components.camera.camera;
+
+    var fov = camera.fov + delta * browserMultiplier;
+    camera.fov = THREE.Math.clamp( fov, 10, 75 );
+    camera.updateProjectionMatrix();
   }
   initializeNav() {
     document.querySelector('#arrow1').addEventListener('click', () => {
