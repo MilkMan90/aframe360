@@ -274,7 +274,7 @@ class PanoFrame extends Component {
           height: '100%',
           width: '100%',
         }}>
-        <a-scene id="scene" stats cursor="rayOrigin: mouse">
+        <a-scene id="scene" cursor="rayOrigin: mouse">
           <a-assets>
             <a-asset-item id="arrow-obj" src={ArrowObj}></a-asset-item>
             <a-asset-item id="arrow-mtl" src={ArrowMtl}></a-asset-item>
@@ -317,6 +317,7 @@ class PanoFrame extends Component {
                       maxPolarAngle: 3.14;
                       autoVRLookCam: false"
               user-height="0">
+              <a-entity id="marker" position="0 0 -10"></a-entity>
           </a-entity>
 
           {textObjects}
@@ -325,12 +326,12 @@ class PanoFrame extends Component {
           <a-text look-at="[camera]"
             value={this.state.currentPano} text="color:#f2d209;opacity:0.8;width:20;side:double" position="2.674 1.363 -6.948" rotation="0.6302535746439055 -24.350706293059986 0"></a-text>
 
-          <a-text look-at="[camera]" value={this.props.data * Math.random()} text="width:20;color:#f996ee;side:double" position="20.619 -2.895 8.072" rotation="-4.011 -126.108 0"></a-text>
-          <a-text look-at="[camera]" value={this.props.data * Math.random()}  text="color:#00c6ee;width:20;side:double" position="18.24 -2.895 -4.431" rotation="-12.146705256773451 -75.22935850067708 0"></a-text>
-          <a-text look-at="[camera]" value={this.props.data * Math.random()}  text="color:#09efa6;width:20;side:double" position="9.157 -2.895 10.378" rotation="-12.719663051904275 -179.04931097838227 0"></a-text>
+          {/* <a-text look-at="[camera]" value={this.props.data * Math.random()} text="width:20;color:#f996ee;side:double" position="20.619 -2.895 8.072" rotation="-4.011 -126.108 0"></a-text> */}
+          {/* <a-text look-at="[camera]" value={this.props.data * Math.random()}  text="color:#00c6ee;width:20;side:double" position="18.24 -2.895 -4.431" rotation="-12.146705256773451 -75.22935850067708 0"></a-text> */}
+          {/* <a-text look-at="[camera]" value={this.props.data * Math.random()}  text="color:#09efa6;width:20;side:double" position="9.157 -2.895 10.378" rotation="-12.719663051904275 -179.04931097838227 0"></a-text> */} */}
               {/* <a-collada-model src="#ms-dae" collada-model="/static/media/302.042c8af9.dae" position="-6.036 -6.435 -10.286" rotation="22.345354010102106 -15.183381570966816 -5.901465289847479" scale="0.774 0.646 0.568"></a-collada-model>           */}
             {/* <a-gltf-model src="#street"></a-gltf-model> */}
-            <a-gltf-model src="url(https://s3.us-east-2.amazonaws.com/mlktestbucket/street/scene.gltf)" gltf-model="https://s3.us-east-2.amazonaws.com/mlktestbucket/street/scene.gltf" position="32.377 -5.084 -6.129" rotation="0 -94.25155729902042 0" scale="0.01 0.01 0.01"></a-gltf-model>
+            {/* <a-gltf-model src="url(https://s3.us-east-2.amazonaws.com/mlktestbucket/street/scene.gltf)" gltf-model="https://s3.us-east-2.amazonaws.com/mlktestbucket/street/scene.gltf" position="32.377 -5.084 -6.129" rotation="0 -94.25155729902042 0" scale="0.01 0.01 0.01"></a-gltf-model> */} */}
             {/* <a-entity gltf-model="#street1"></a-entity> */}
 
           <a-entity>

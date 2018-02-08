@@ -19,26 +19,33 @@ class App extends Component {
     }
   }
   generateNewObject() {
+    var markerEl = document.querySelector('#marker');
+    const {x, y, z} = markerEl.object3D.getWorldPosition()
     const newObj = {
-      x: generateRandom(-20, 20),
-      y: generateRandom(-20, 20),
-      z: generateRandom(-2, 10)
+      // x: generateRandom(-20, 20),
+      // y: generateRandom(-20, 20),
+      // z: generateRandom(-2, 10)
+      x, y, z
     }
     this.setState({
       components: this.state.components.concat(newObj)
     })
   }
   generateNewRender() {
+    var markerEl = document.querySelector('#marker');
+    const {x, y, z} = markerEl.object3D.getWorldPosition()
     const newObj = {
-      x: generateRandom(-20, 20),
-      y: generateRandom(-20, 20),
-      z: generateRandom(-2, 5)
+      // x: generateRandom(-20, 20),
+      // y: generateRandom(-20, 20),
+      // z: generateRandom(-2, 5)
+      x, y, z
     }
     this.setState({
       renders: this.state.renders.concat(newObj)
     })
   }
   render() {
+
     return (
       <div
         className="App"
