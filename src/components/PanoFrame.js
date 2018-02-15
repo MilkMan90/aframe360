@@ -1,9 +1,11 @@
 import 'aframe'
-import AFrame from 'aframe'
+import AFRAME from 'aframe'
 import 'aframe-orbit-controls-component-2'
 // import createComponent from '../aframeComponents/orbitControls';
 import 'aframe-cubemap-component'
 import 'aframe-look-at-component'
+// import 'aframe-gltf-part-component';
+
 import '../App.css'
 import React, { Component } from 'react';
 
@@ -19,7 +21,91 @@ import MSdae from '../objects/mapspacer/302.dae';
 import pano2 from '../panos/FEAST Organic Garden.jpg'
 import pano3 from '../panos/The Green Bean.jpg'
 import pano4 from '../panos/The Marketplace.jpg'
-var THREE = require('three');
+
+const THREE = AFRAME.THREE;
+//
+// GLTF2Loader(THREE)
+//
+// console.log(typeof THREE.GLTF2Loader)
+
+
+var LOADING_MODELS = {};
+var MODELS = {};
+
+AFRAME.registerComponent('gltf-part', {
+  schema: {
+    buffer: {default: true},
+    part: {type: 'string'},
+    src: {type: 'asset'}
+  },
+
+  init: function () {
+    var el = this.el;
+    this.getModel(function (modelPart) {
+      if (!modelPart) { return; }
+      el.setObject3D('mesh', modelPart)
+    });
+  },
+
+  /**
+   * Fetch, cache, and select from GLTF.
+   *
+   * @returns {object} Selected subset of model.
+   */
+  getModel: function (cb) {
+    var self = this;
+
+    // Already parsed, grab it.
+    if (MODELS[this.data.src]) {
+      cb(this.selectFromModel(MODELS[this.data.src]));
+      return;
+    }
+
+    // Currently loading, wait for it.
+    if (LOADING_MODELS[this.data.src]) {
+      return LOADING_MODELS[this.data.src].then(function (model) {
+        cb(self.selectFromModel(model));
+      });
+    }
+
+    // Not yet fetching, fetch it.
+    LOADING_MODELS[this.data.src] = new Promise(function (resolve) {
+      new THREE.GLTFLoader().load(self.data.src, function (gltfModel) {
+        var model = gltfModel.scene || gltfModel.scenes[0];
+        MODELS[self.data.src] = model;
+        delete LOADING_MODELS[self.data.src];
+        cb(self.selectFromModel(model));
+        resolve(model);
+      }, function () { }, console.error);
+    });
+  },
+
+  /**
+   * Search for the part name and look for a mesh.
+   */
+  selectFromModel: function (model) {
+    var mesh;
+    var part;
+
+    part = model.getObjectByName(this.data.part);
+    if (!part) {
+      console.error('[gltf-part] `' + this.data.part + '` not found in model.');
+      return;
+    }
+
+    mesh = part.getObjectByProperty('type', 'Mesh').clone(true);
+
+    if (this.data.buffer) {
+      mesh.geometry = mesh.geometry.toNonIndexed();
+
+      console.log(mesh);
+
+      return mesh;
+    }
+    mesh.geometry = new THREE.Geometry().fromBufferGeometry(mesh.geometry);
+    return mesh;
+  }
+});
 
 
 // const pano1 = 'https://s3-us-west-2.amazonaws.com/rawpanoupload/mlkaufman747%40gmail.com/Helvellyn_Striding_Edge_360_Panorama%2C_Lake_District_-_June_09(1).jpg';
@@ -49,6 +135,10 @@ class PanoFrame extends Component {
       currentPano: "#pano1",
       vr: false,
     }
+    this.materialArray = [];
+  }
+  componentWillReceiveProps(nextProps) {
+    this.changeColorOfMeshes(nextProps.renderIndex)
   }
   componentDidMount() {
 
@@ -66,6 +156,37 @@ class PanoFrame extends Component {
     // console.log(camera.components['orbit-controls'].getZoomScale);
     // // const test = camera.getAttribute('orbit-controls').getZoom
     // // console.log(test);
+
+    // const torchEl = document.querySelector('#torch')
+    // console.log(torchEl.object3D);
+    // var tex = new THREE.TextureLoader().load('https://s3.us-east-2.amazonaws.com/mlktestbucket/dungeon/dungeon/textures/tile1_diffuse.jpeg');
+    //   torchEl.addEventListener('model-loaded', function (e) {
+    //   e.detail.model.traverse(function(node) {
+    //     if (node.isMesh) node.material.map = tex;
+    //   });
+    // });
+
+    this.materialArray = [];
+    const shipEl = document.querySelector('#shipObj');
+    shipEl.addEventListener('model-loaded', (e) => {
+      shipEl.object3D.traverse((e) => {
+        console.log(e);
+        if (e.isMesh) {
+          // e.material.color = new THREE.Color('#fff123')
+          this.materialArray.push(e);
+        }
+      });
+    });
+    const containers = document.querySelector('#cargoObj');
+    containers.addEventListener('model-loaded', (e) => {
+      containers.object3D.traverse((e) => {
+        console.log(e);
+        if (e.isMesh) {
+          // e.material.color = new THREE.Color('#fff123')
+          this.materialArray.push(e);
+        }
+      });
+    });
 
 
     const assetEl = document.querySelector('#pano1')
@@ -261,11 +382,18 @@ class PanoFrame extends Component {
         rotation="0 -94.25155729902042 0" scale="0.01 0.01 0.01"></a-gltf-model>
     })
   }
+
+  changeColorOfMeshes(index) {
+    this.materialArray[index].material.color = new THREE.Color(`rgb(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)})`)
+    console.log(this.materialArray[index]);
+  }
   render() {
     const selected = this.state.selectedArrow;
 
     const textObjects = this.props.components.length > 0 && this.renderTextObjects(this.props.components);
     const renderObjects = this.props.renders.length > 0 && this.renderObjects(this.props.renders);
+
+
     return (
       <div
         className="App"
@@ -283,6 +411,13 @@ class PanoFrame extends Component {
             {/* <a-asset-item id="ms-obj" src={MSObj}></a-asset-item>
             <a-asset-item id="ms-mtl" src={MSMtl}></a-asset-item> */}
             {/* <a-asset-item id="ms-dae" src={MSdae}></a-asset-item> */}
+            <a-asset-item id="dungeon" src="https://s3.us-east-2.amazonaws.com/mlktestbucket/dungeon/dungeon/scene.gltf" crossorigin="anonymous"></a-asset-item>
+            {/* <a-asset-item id="disney" src="https://s3.us-east-2.amazonaws.com/mlktestbucket/DisneySampleModel.gltf" crossorigin="anonymous"></a-asset-item> */}
+            {/* <a-asset-item id="ship" src="https://s3.us-east-2.amazonaws.com/mlktestbucket/ship.gltf" crossorigin="anonymous"></a-asset-item> */}
+            <a-asset-item id="ship" src="https://s3.us-east-2.amazonaws.com/mlktestbucket/ship/ship1.gltf" crossorigin="anonymous"></a-asset-item>
+            <a-asset-item id="cargo" src="https://s3.us-east-2.amazonaws.com/mlktestbucket/ship/cargo1.gltf" crossorigin="anonymous"></a-asset-item>
+            {/* <a-asset-item id="ship" src="https://s3.us-east-2.amazonaws.com/mlktestbucket/cargoship/cargoship.gltf" crossorigin="anonymous"></a-asset-item> */}
+
             <img id="pano1" crossorigin="anonymous" src={pano1}/>
             <img id="pano2" crossorigin="anonymous" src={pano2}/>
             <img id="pano3" crossorigin="anonymous" src={pano3}/>
@@ -291,11 +426,38 @@ class PanoFrame extends Component {
 
           {/* <a-entity cubemap="folder: assets/"></a-entity> */}
 
-          <a-sky
-            src={this.state.currentPano}
+          {/* <a-sky
+            // src={this.state.currentPano}
+            src="https://s3-us-west-2.amazonaws.com/rawpanoupload/ByB8kSRHG.jpg"
             radius="100"
             id="sky"
-          />
+          /> */}
+
+          {/* <a-entity id="torch" gltf-part="src: #dungeon; part: torch_1_palette_0; buffer: false" position="0 0 -1"></a-entity> */}
+          {/* <a-entity id="torch" gltf-part="src: #disney; part: b1_6; buffer: false" position="0 0 -1"></a-entity> */}
+          <a-gltf-model id="shipObj" src="#ship"></a-gltf-model>
+          <a-gltf-model id="cargoObj" src="#cargo"></a-gltf-model>
+
+          {/* <a-entity gltf-part="src: #ship; part: root; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: lifeboats; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: Cargo; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: Hulll; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: Tower; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: water; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: anchor; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: cargo decks; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: Deck; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: emergency; buffer: true" position="0 1 -2"></a-entity>
+          <a-entity gltf-part="src: #ship; part: walkways; buffer: true" position="0 1 -2"></a-entity> */}
+
+
+
+           {/* <a-entity gltf-part="src: #dungeon; part: desk" material="color: brown" position="0 1 -2"></a-entity>
+           <a-entity gltf-part="src: #dungeon; part: wall1" material="color: white" position="-1 0 -3"></a-entity>
+           <a-entity gltf-part="src: #dungeon; part: wall2" material="color: white" position="1 0 -3"></a-entity> */}
+
+
+          {/* <a-curvedimage src='https://s3-us-west-2.amazonaws.com/xplorertourmedia/panos/ryWzMagwz.jpeg'/> */}
 
           <a-entity
             id="camera"

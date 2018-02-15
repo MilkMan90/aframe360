@@ -15,7 +15,8 @@ class App extends Component {
     this.state = {
       data: Math.random(),
       components: [],
-      renders: []
+      renders: [],
+      renderIndex: 0,
     }
   }
   generateNewObject() {
@@ -44,6 +45,11 @@ class App extends Component {
       renders: this.state.renders.concat(newObj)
     })
   }
+  changeRenderColor() {
+    this.setState({
+      renderIndex: this.state.renderIndex + 1,
+    })
+  }
   render() {
 
     return (
@@ -55,7 +61,8 @@ class App extends Component {
           width: '100%',
         }}>
         <PanoFrame data={this.state.data} components={this.state.components}
-        renders={this.state.renders}/>
+        renders={this.state.renders}
+        renderIndex={this.state.renderIndex}/>
         <button
           onClick={()=>{this.generateNewObject()}}
           style={{
@@ -74,6 +81,19 @@ class App extends Component {
           style={{
             position: 'absolute',
             right: '20px',
+            top: '10px',
+            width: '200px',
+            height: '50px',
+            zIndex: 9999
+          }}
+        >
+          Add Renders
+        </button>
+        <button
+          onClick={()=>{this.changeRenderColor()}}
+          style={{
+            position: 'absolute',
+            right: '500px',
             top: '10px',
             width: '200px',
             height: '50px',
